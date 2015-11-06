@@ -21,7 +21,8 @@ location / {
             #对应的源目录，一般为nfs的挂载目录
             zcms_site_root /mnt/wwwroot/;
             
-			zcms_sync_interval 60s;
+            #同步检查间隔
+	    zcms_sync_interval 60s;
 			
             #也可开启文件缓存以提高性能
             #open_file_cache max=1000 inactive=20s; 
