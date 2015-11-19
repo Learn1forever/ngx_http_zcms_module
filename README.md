@@ -3,7 +3,7 @@ ZCMS nginx plugin
 
 安装
 1.进入nginx目录
-<code>patch -p1</web/ngx_http_zcms_module/zcms.patch</code>
+<code>patch -p1 < /web/ngx_http_zcms_module/zcms.patch</code>
 
 2.在nginx编译中 
 <code>./configure --add-module=/web/ngx_http_zcms_module</code>
