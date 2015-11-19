@@ -1,0 +1,45 @@
+diff -Naur nginx-1.9.5_orgin/src/core/ngx_open_file_cache.c nginx-1.9.5/src/core/ngx_open_file_cache.c
+--- nginx-1.9.5_orgin/src/core/ngx_open_file_cache.c	2015-09-22 22:36:22.000000000 +0800
++++ nginx-1.9.5/src/core/ngx_open_file_cache.c	2015-11-13 07:49:50.330537770 +0800
+@@ -425,6 +425,14 @@
+ 
+ found:
+ 
++    if(file->uses == 1){
++        file->copy_accessed = now;
++    }
++    of-> accessed = file->copy_accessed;	   
++    if(of->is_copy){
++        file->copy_accessed = now;
++    }
++	
+     file->accessed = now;
+ 
+     ngx_queue_insert_head(&cache->expire_queue, &file->queue);
+diff -Naur nginx-1.9.5_orgin/src/core/ngx_open_file_cache.h nginx-1.9.5/src/core/ngx_open_file_cache.h
+--- nginx-1.9.5_orgin/src/core/ngx_open_file_cache.h	2015-09-22 22:36:22.000000000 +0800
++++ nginx-1.9.5/src/core/ngx_open_file_cache.h	2015-11-13 07:49:50.329537770 +0800
+@@ -29,6 +29,7 @@
+     char                    *failed;
+ 
+     time_t                   valid;
++    time_t                   accessed;
+ 
+     ngx_uint_t               min_uses;
+ 
+@@ -48,6 +49,7 @@
+     unsigned                 is_link:1;
+     unsigned                 is_exec:1;
+     unsigned                 is_directio:1;
++    unsigned                 is_copy:1;
+ } ngx_open_file_info_t;
+ 
+ 
+@@ -60,6 +62,7 @@
+     u_char                  *name;
+     time_t                   created;
+     time_t                   accessed;
++    time_t                   copy_accessed;
+ 
+     ngx_fd_t                 fd;
+     ngx_file_uniq_t          uniq;
