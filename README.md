@@ -1,7 +1,7 @@
 # ngx_http_zcms_module 安装说明
 ZCMS nginx plugin
-
-安装
+ 
+## 安装
 1. 下载代码
 ```
 git clone https://github.com/rainsky2008/ngx_http_zcms_module.git</code>
@@ -13,21 +13,21 @@ cd nginx
 patch -p1 < /web/ngx_http_zcms_module/zcms.patch
 ```
 
-2.在nginx编译中加入ngx_http_zcms_module
+3.在nginx编译中加入ngx_http_zcms_module
 ```
 ./configure --add-module=/web/ngx_http_zcms_module
 ```
-3.编译
+3.编译并安装
 ```
 make && make install
 ```
 
-4.如果采用tengine，可以使用动态编译方式
+5.如果采用tengine，可以使用动态编译方式
 ```
 ./dso_tool --add-module=/web/ngx_http_zcms_module/
 ```
-
-使用：
+ 
+## 使用：
 在nginx配置中开启 zcms同步 
 ```
 location / {
