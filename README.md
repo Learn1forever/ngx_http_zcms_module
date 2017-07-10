@@ -36,6 +36,7 @@ char *ngx_module_names[] = {
      ......
 ```
 关于执行顺序的说明：http://blog.aka-cool.net/blog/2014/03/06/nginx-module-execute-order-in-same-phrase/
+
 5.编译并安装
 ```
 make && make install
