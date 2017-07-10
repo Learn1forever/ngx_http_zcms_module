@@ -17,12 +17,31 @@ patch -p1 < /web/ngx_http_zcms_module/zcms.patch
 ```
 ./configure --add-module=/web/ngx_http_zcms_module
 ```
-3.编译并安装
+
+4.修改 objs/ngx_modules.c文件中的ngx_http_zcms_module顺序，放置到ngx_http_static_module之后
+```
+ngx_module_t *ngx_modules[] = {
+    &ngx_core_module,
+    ......
+    &ngx_http_static_module, 
+    &ngx_http_zcms_module,
+    ......
+```
+```
+char *ngx_module_names[] = {
+    "ngx_core_module",
+     ......
+    "ngx_http_static_module",
+    "ngx_http_zcms_module",
+     ......
+```
+关于执行顺序的说明：http://blog.aka-cool.net/blog/2014/03/06/nginx-module-execute-order-in-same-phrase/
+5.编译并安装
 ```
 make && make install
 ```
 
-5.如果采用tengine，可以使用动态编译方式
+6.如果采用tengine，可以使用动态编译方式
 ```
 ./dso_tool --add-module=/web/ngx_http_zcms_module/
 ```
