@@ -145,34 +145,13 @@ ngx_http_zcms_handler(ngx_http_request_t *r)
                    "r->uri.data: \"%s\"", r->uri.data);    
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0,
                    " r->uri.len: \"%d\"",  r->uri.len);   
-    if (r->uri.data[r->uri.len - 1] == '/') {
-        ngx_str_t index = ngx_string("index.shtml");
-        dir_index_to.len = path.len + index.len+1;
-        dir_index_to.data = ngx_pnalloc(r->pool,dir_index_to.len);
-
-        last = ngx_copy(dir_index_to.data, path.data, path.len);
-        last = ngx_cpystrn(last, index.data, index.len+1);
+	
+    dir_index_to = path;
         
-        ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0,
-                   "dir_index_to: \"%s\"", dir_index_to.data);
-
-        //get the site wwwroot file
-        ngx_str_t index2 = ngx_string("/index.shtml");
-        dir_index_from.len = zlcf->zcms_site_root.len + r->uri.len + index2.len+1;
-        dir_index_from.data = ngx_pnalloc(r->pool,dir_index_from.len);   
-        last = ngx_copy(dir_index_from.data, zlcf->zcms_site_root.data, zlcf->zcms_site_root.len);
-        last = ngx_cpystrn(last, r->uri.data, r->uri.len);
-        last = ngx_cpystrn(last, index2.data, index2.len+1);
-        ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0,
-                   "dir_index_from: \"%s\"", dir_index_from.data);
-    }else{
-        dir_index_to = path;
-        
-        dir_index_from.len = zlcf->zcms_site_root.len + r->uri.len+1;
-        dir_index_from.data = ngx_pnalloc(r->pool,dir_index_from.len);
-        last = ngx_copy(dir_index_from.data, zlcf->zcms_site_root.data, zlcf->zcms_site_root.len);
-        last = ngx_cpystrn(last, r->uri.data, r->uri.len+1);
-    }
+    dir_index_from.len = zlcf->zcms_site_root.len + r->uri.len+1;
+    dir_index_from.data = ngx_pnalloc(r->pool,dir_index_from.len);
+    last = ngx_copy(dir_index_from.data, zlcf->zcms_site_root.data, zlcf->zcms_site_root.len);
+    last = ngx_cpystrn(last, r->uri.data, r->uri.len+1);
     
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0,
                    "dir_index_to: \"%s\"", dir_index_to.data);
