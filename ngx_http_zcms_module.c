@@ -223,10 +223,10 @@ ngx_http_zcms_handler(ngx_http_request_t *r)
                 cf.time = src_of.mtime;
                 cf.log = r->connection->log;  
 		    
-	        //overwrite the old file
-		if(ngx_delete_file(dir_index_to.data) != NGX_OK){
-		    return NGX_DECLINED;
-		}
+	            //overwrite the old file
+		        if(ngx_delete_file(dir_index_to.data) != NGX_OK){
+		            return NGX_DECLINED;
+		        }
                 if(ngx_copy_file(dir_index_from.data, dir_index_to.data, &cf) == NGX_OK){
                     return NGX_DECLINED;
                 }
