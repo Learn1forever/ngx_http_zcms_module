@@ -88,6 +88,7 @@ ngx_http_zcms_handler(ngx_http_request_t *r)
 {
     u_char                    *last;
     size_t                     root;
+    size_t                     alias;
     ngx_str_t                  path,dir_index_from,dir_index_to;
     //ngx_log_t                 *log;
     ngx_open_file_info_t       of,src_of;
@@ -108,7 +109,7 @@ ngx_http_zcms_handler(ngx_http_request_t *r)
         return NGX_DECLINED;
     }
 
-    //log = r->connection->log;
+    log = r->connection->log;
 
     /*
      * ngx_http_map_uri_to_path() allocates memory for terminating '\0'
@@ -116,6 +117,7 @@ ngx_http_zcms_handler(ngx_http_request_t *r)
      */
 
     last = ngx_http_map_uri_to_path(r, &path, &root, 0);
+
     if (last == NULL) {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
@@ -148,10 +150,15 @@ ngx_http_zcms_handler(ngx_http_request_t *r)
 	
     dir_index_to = path;
         
+    alias = clcf->alias;
+
     dir_index_from.len = zlcf->zcms_site_root.len + r->uri.len+1;
     dir_index_from.data = ngx_pnalloc(r->pool,dir_index_from.len);
+
     last = ngx_copy(dir_index_from.data, zlcf->zcms_site_root.data, zlcf->zcms_site_root.len);
-    last = ngx_cpystrn(last, r->uri.data, r->uri.len+1);
+    last = ngx_cpystrn(last, r->uri.data + alias, r->uri.len - alias + 1);
+
+    //last = ngx_cpystrn(last, r->uri.data, r->uri.len+1);
     
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0,
                    "dir_index_to: \"%s\"", dir_index_to.data);
