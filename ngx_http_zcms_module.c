@@ -80,8 +80,8 @@ ngx_module_t ngx_http_zcms_module = {
     NGX_MODULE_V1_PADDING};
 
 static ngx_int_t ngx_http_zcms_handler(ngx_http_request_t *r) {
-  u_char *last;
-  size_t root;
+  u_char *last,*location;
+  size_t root,len;
   size_t alias;
   ngx_str_t path, source_file_path, destination_file_path, index;
   ngx_log_t *log;
@@ -196,6 +196,54 @@ static ngx_int_t ngx_http_zcms_handler(ngx_http_request_t *r) {
       cf.access = 0644;
       cf.time = of.mtime;
       cf.log = r->connection->log;
+
+      //if source file is dir,redirect dir/
+      if(of.is_dir){
+        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "zcms http dir");
+
+        ngx_http_clear_location(r);
+
+        r->headers_out.location = ngx_list_push(&r->headers_out.headers);
+        if (r->headers_out.location == NULL) {
+            return NGX_HTTP_INTERNAL_SERVER_ERROR;
+        }
+
+        len = r->uri.len + 1;
+
+        if (!clcf->alias && clcf->root_lengths == NULL && r->args.len == 0) {
+            location = path.data + clcf->root.len;
+
+            *last = '/';
+
+        } else {
+            if (r->args.len) {
+                len += r->args.len + 1;
+            }
+
+            location = ngx_pnalloc(r->pool, len);
+            if (location == NULL) {
+                ngx_http_clear_location(r);
+                return NGX_HTTP_INTERNAL_SERVER_ERROR;
+            }
+
+            last = ngx_copy(location, r->uri.data, r->uri.len);
+
+            *last = '/';
+
+            if (r->args.len) {
+                *++last = '?';
+                ngx_memcpy(++last, r->args.data, r->args.len);
+            }
+        }
+
+        r->headers_out.location->hash = 1;
+        ngx_str_set(&r->headers_out.location->key, "Location");
+        r->headers_out.location->value.len = len;
+        r->headers_out.location->value.data = location;
+
+        return NGX_HTTP_MOVED_PERMANENTLY;
+      }
+
       if (ngx_copy_file(source_file_path.data, destination_file_path.data, &cf) ==
           NGX_OK) {
         ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "copy file success: \"%s\"",
